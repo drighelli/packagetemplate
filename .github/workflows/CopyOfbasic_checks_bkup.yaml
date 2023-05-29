@@ -5,28 +5,21 @@ on: [push, pull_request]
 env:
   cache-version: v1
 
-
 jobs:
-  R-CMD-check:
-    runs-on: ${{ matrix.config.os }}
-    container: ${{ matrix.config.image }}
-
-    name: ${{ matrix.config.os }} (${{ matrix.config.bioc }} - ${{ matrix.config.image }})
-
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-        - { os: windows-latest}
-        - { os: macOS-latest}
-        - { os: ubuntu-latest}
-
+  r-build-and-check:
+    runs-on: ubuntu-latest
+    container: bioconductor/bioconductor_docker:devel
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-      CRAN: ${{ matrix.config.cran }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      CURL_CONFIG: ${{ matrix.config.curlConfigPath }}curl-config
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Query dependencies and update old packages
+        run: |
+          BiocManager::install(ask=FALSE)
+          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
+        shell: Rscript {0}
         
       - name: Cache R packages
         if: runner.os != 'Windows'
@@ -37,7 +30,7 @@ jobs:
           restore-keys: ${{ env.cache-version }}-${{ runner.os }}-r-
 
       # This lets us augment with additional dependencies
-      - name: Install system dependencies (Linux)
+      - name: Install system dependencies
         if: runner.os == 'Linux'
         env:
           RHUB_PLATFORM: linux-x86_64-ubuntu-gcc
@@ -45,13 +38,6 @@ jobs:
           Rscript -e "remotes::install_github('r-hub/sysreqs')"
           sysreqs=$(Rscript -e "cat(sysreqs::sysreq_commands('DESCRIPTION'))")
           sudo -s eval "$sysreqs"
-          sudo apt-get update && sudo apt-get -y install libcurl4-openssl-dev libharfbuzz-dev libfribidi-dev
-      
-      - name: Install system dependencies (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install harfbuzz
-          brew install fribidi
           
       - name: Install dependencies
         run: |

@@ -1,16 +1,16 @@
-Package: BuildABiocWorkshop
-Title: Bioconductor or R Workshop Template and Github Actions
-Version: 2.0.0
+Package: packagetemplate
+Title: R package Template and Github Actions
+Version: 1.0.0
 Authors@R: 
-    person(given = "Sean",
-           family = "Davis",
+    person(given = "Dario",
+           family = "Righelli",
            role = c("aut", "cre"),
-           email = "seandavi@gmail.com",
-           comment = c(ORCID = "0000-0002-8991-6458"))
+           email = "drighelli@gmail.com",
+           comment = c(ORCID = 0000-0003-1504-3583"))
 Description: This package serves as a template for using github actions to 
-    prepare a Bioconductor Workshop package for use. In particular,
+    prepare a R package for use. In particular,
     a pkgdown website and docker image are generated based on workflow 
-    settings. 
+    settings. It is based on Sean Davis' BuildABiocWorkshop template
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -22,7 +22,7 @@ Suggests:
     knitr,
     rmarkdown,
     pkgdown
-URL: https://seandavi.github.io/BuildABiocWorkshop/
-BugReports: https://github.com/seandavi/BuildABiocWorkshop/issues/new/choose
+URL: https://drighelli.github.io/packagetemplate/
+BugReports: https://github.com/drighelli/packagetemplate/issues/new/choose
 VignetteBuilder: knitr
-DockerImage: ghcr.io/seandavi/buildabiocworkshop:latest
+DockerImage: ghcr.io/drighelli/packagetemplate:latest
